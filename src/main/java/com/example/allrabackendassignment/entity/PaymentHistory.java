@@ -23,6 +23,9 @@ public class PaymentHistory {
     @Column(name = "id")
     private Long id; // 결제 요청 이력 ID (고유 키)
 
+    @Column(name = "customer_id", nullable = false)
+    private Long customerId;
+
     @Column(name = "order_id", nullable = false)
     private Long orderId; // 주문 ID
 
@@ -45,8 +48,9 @@ public class PaymentHistory {
     private LocalDateTime updatedAt; // 수정 시간
 
     @Builder
-    public PaymentHistory(Long id, Long orderId, Long amount, String paymentMethod, String status, String transactionId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public PaymentHistory(Long id, Long customerId, Long orderId, Long amount, String paymentMethod, String status, String transactionId, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
+        this.customerId = customerId;
         this.orderId = orderId;
         this.amount = amount;
         this.paymentMethod = paymentMethod;

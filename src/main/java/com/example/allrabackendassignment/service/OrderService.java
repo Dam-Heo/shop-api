@@ -112,6 +112,7 @@ public class OrderService {
         cartRepository.deleteAll(cartItems);
 
         // 결제 요청
+        paymentRequest.setCustomerId(order.getCustomer().getId());
         paymentRequest.setOrderId(order.getId());
         paymentRequest.setAmount(order.getTotalPrice());
         PaymentResponse paymentResponse = paymentService.processPayment(paymentRequest);

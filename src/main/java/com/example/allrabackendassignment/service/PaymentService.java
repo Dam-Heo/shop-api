@@ -56,6 +56,7 @@ public class PaymentService {
      */
     private void savePaymentHistory(PaymentRequest paymentRequest, PaymentResponse paymentResponse) {
         PaymentHistory paymentHistory = PaymentHistory.builder()
+                .customerId(paymentRequest.getCustomerId())
                 .orderId(paymentRequest.getOrderId())
                 .amount(paymentRequest.getAmount())
                 .paymentMethod(paymentRequest.getPaymentMethod())
