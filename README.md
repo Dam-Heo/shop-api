@@ -17,6 +17,27 @@
 
 ```mermaid
 
+```테이블#지원자 : 허담
+
+# allra 백엔드 과제
+
+## 기능
+- **상품 조회**: 구매 가능한 상품 목록을 불러옵니다.
+- **장바구니**: 상품을 장바구니에 추가하고 수량을 관리합니다.
+- **주문 및 결제**: 주문을 제출하고 결제를 처리합니다.
+- **주문 내역 조회**: 사용자의 완료된 주문 기록을 조회합니다.
+
+## 기술 스택
+- Java 21
+- Spring Boot 3.4.3
+- MariaDB 10.6.21
+- JPA (Java Persistence API)
+- Git
+
+```mermaid
+
+```ERD
+
 erDiagram
     CUSTOMER {
         Long id
@@ -60,15 +81,6 @@ erDiagram
         LocalDateTime createdAt
         LocalDateTime updatedAt
     }
-    PAYMENT_REQUEST {
-        Long id
-        Long customerId
-        Long orderId
-        Long amount
-        String paymentMethod
-        LocalDateTime createdAt
-        LocalDateTime updatedAt
-    }
     PAYMENT_HISTORY {
         Long id
         Long customerId
@@ -87,7 +99,7 @@ erDiagram
     ORDER ||--o{ ORDER_DETAIL : contains
     ORDER ||--o{ PAYMENT_HISTORY : generates
     PRODUCT ||--o{ CART : contains
-    PAYMENT_REQUEST ||--|| PAYMENT_HISTORY : requests
+
 ```
 
 ##API 엔드포인트
