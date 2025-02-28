@@ -17,7 +17,7 @@
 
 ```mermaid
 
-```ERD
+```erDiagram
 
 erDiagram
     CUSTOMER {
