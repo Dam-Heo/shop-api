@@ -15,9 +15,8 @@
 - JPA (Java Persistence API)
 - Git
 
-```mermaid
-
 #ERD
+```mermaid
 
 erDiagram
     CUSTOMER {
