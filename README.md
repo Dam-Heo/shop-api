@@ -15,6 +15,81 @@
 - JPA (Java Persistence API)
 - Git
 
+```mermaid
+
+erDiagram
+    CUSTOMER {
+        Long id
+        String name
+        String email
+        String password
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
+    PRODUCT {
+        Long id
+        String name
+        String description
+        Long price
+        int stock
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
+    CART {
+        Long id
+        Long customerId
+        Long productId
+        int quantity
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
+    ORDER {
+        Long id
+        Long customerId
+        Long totalPrice
+        String status
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
+    ORDER_DETAIL {
+        Long id
+        Long orderId
+        Long productId
+        int quantity
+        Long price
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
+    PAYMENT_REQUEST {
+        Long id
+        Long customerId
+        Long orderId
+        Long amount
+        String paymentMethod
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
+    PAYMENT_HISTORY {
+        Long id
+        Long customerId
+        Long orderId
+        Long amount
+        String paymentMethod
+        String status
+        String transactionId
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
+
+    CUSTOMER ||--o{ ORDER : has
+    CUSTOMER ||--o{ CART : has
+    CUSTOMER ||--o{ PAYMENT_HISTORY : has
+    ORDER ||--o{ ORDER_DETAIL : contains
+    ORDER ||--o{ PAYMENT_HISTORY : generates
+    PRODUCT ||--o{ CART : contains
+    PAYMENT_REQUEST ||--|| PAYMENT_HISTORY : requests
+```
+
 ##API 엔드포인트
 # 상품 조회
 GET /products
