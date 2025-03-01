@@ -83,46 +83,60 @@ erDiagram
 ```
 
 ##API 엔드포인트
-Customers
-GET /customers/{id}: 특정 고객 조회
 
-POST /customers: 새로운 고객 추가
+#특정 고객 조회
+GET /customers/{id}
 
-PUT /customers/{id}: 기존 고객 수정
+#새로운 고객 추가
+POST /customers
 
-DELETE /customers/{id}: 고객 삭제
+#기존 고객 수정
+PUT /customers/{id}
 
-Products
-GET /products: 모든 상품 조회
+#고객 삭제
+DELETE /customers/{id}
 
-GET /products/{id}: 특정 상품 조회
+#모든 상품 조회
+GET /products
 
-GET /products/in-stock: 재고 수량이 0보다 큰 상품 조회
+#특정 상품 조회
+GET /products/{id}
 
-POST /products: 새로운 상품 추가
+#재고 수량이 0보다 큰 상품 조회
+GET /products/in-stock
 
-PUT /products/{id}: 기존 상품 수정
+#새로운 상품 추가
+POST /products
 
-DELETE /products/{id}: 상품 삭제
+#기존 상품 수정
+PUT /products/{id}
 
-Cart
-GET /cart/{customerId}: 특정 고객의 장바구니 아이템 조회
+#상품 삭제
+DELETE /products/{id}
 
-POST /cart: 장바구니에 아이템 추가
+#특정 고객의 장바구니 아이템 조회
+GET /cart/{customerId}
 
-PUT /cart/{id}: 장바구니 아이템 수정
+#장바구니에 아이템 추가
+POST /cart
 
-DELETE /cart/{id}: 장바구니 아이템 삭제
+#장바구니 아이템 수정
+PUT /cart/{id}
 
-Orders
-GET /orders/{customerId}: 특정 고객의 주문 내역 조회
+#장바구니 아이템 삭제
+DELETE /cart/{id}
 
-POST /orders: 주문 생성 및 결제 처리
+#특정 고객의 주문 내역 조회
+GET /orders/{customerId}
 
-POST /orders/{customerId}/cart-to-order: 장바구니의 모든 상품을 주문으로 변환하고 결제 처리
+#주문 생성 및 결제 처리
+POST /orders
 
-Payment History
-GET /payment-history/{customerId}: 특정 고객의 결제 이력 조회
+#장바구니의 모든 상품을 주문으로 변환하고 결제 처리
+POST /orders/{customerId}/cart-to-order
 
-GET /payment-history: 모든 결제 이력 조회
+#특정 고객의 결제 이력 조회
+GET /payment-history/{customerId}
 
+#모든 결제 이력 조회
+GET /payment-history
