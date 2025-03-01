@@ -29,5 +29,13 @@ public class Customer {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt; // 수정 시간
+
+    @Builder
+    public Customer(Long id, String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.name = name;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }
 
