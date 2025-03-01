@@ -82,7 +82,7 @@ erDiagram
 
 ```
 
-##API 엔드포인트
+# API 엔드포인트
 
 ## 특정 고객 조회
 GET /customers/{id}
