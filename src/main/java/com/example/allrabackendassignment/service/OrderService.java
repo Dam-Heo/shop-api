@@ -95,7 +95,7 @@ public class OrderService {
                 .sum();
 
         Order order = Order.builder()
-                .customer(cartItems.get(0).getCustomer())
+                .customer(cartItems.getFirst().getCustomer())
                 .totalPrice(totalPrice)
                 .status("처리 중")
                 .createdAt(LocalDateTime.now())

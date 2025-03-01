@@ -38,7 +38,7 @@ public class PaymentHistory {
     @Column(name = "status", nullable = false)
     private String status; // 결제 상태
 
-    @Column(name = "transaction_id", nullable = true)
+    @Column(name = "transaction_id")
     private String transactionId; // 트랜잭션 ID
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -46,18 +46,4 @@ public class PaymentHistory {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt; // 수정 시간
-
-    @Builder
-    public PaymentHistory(Long id, Long customerId, Long orderId, Long amount, String paymentMethod, String status, String transactionId, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.customerId = customerId;
-        this.orderId = orderId;
-        this.amount = amount;
-        this.paymentMethod = paymentMethod;
-        this.status = status;
-        this.transactionId = transactionId;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
 }
