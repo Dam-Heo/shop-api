@@ -1,10 +1,10 @@
 package com.example.allrabackendassignment.service;
 
+import com.example.allrabackendassignment.dto.OrderDTO;
+import com.example.allrabackendassignment.dto.OrderDetailDTO;
 import com.example.allrabackendassignment.dto.PaymentRequest;
 import com.example.allrabackendassignment.dto.PaymentResponse;
-import com.example.allrabackendassignment.entity.Cart;
-import com.example.allrabackendassignment.entity.Order;
-import com.example.allrabackendassignment.entity.OrderDetail;
+import com.example.allrabackendassignment.entity.*;
 import com.example.allrabackendassignment.repository.CartRepository;
 import com.example.allrabackendassignment.repository.OrderDetailRepository;
 import com.example.allrabackendassignment.repository.OrderRepository;
@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,34 +29,53 @@ public class OrderService {
 
     /**
      * 특정 고객의 주문 내역을 조회합니다.
-     *
      * @param customerId 고객 ID
      * @return 주문 목록
      */
     public List<Order> getOrdersByCustomerId(Long customerId) {
-        return orderRepository.findAllByCustomerId(customerId);
+        List<Order> orders = orderRepository.findAllByCustomerId(customerId);
+        if (orders.isEmpty()) {
+            throw new NoSuchElementException("해당 ID를 가진 고객의 주문을 찾을 수 없습니다: " + customerId);
+        }
+        return orders;
     }
 
     /**
      * 주문을 생성하고 결제를 처리합니다.
-     * @param order 주문 정보
-     * @param paymentRequest 결제 요청 정보
+     * @param orderDTO 주문 정보
      * @return 생성된 주문
      */
     @Transactional
-    public Order placeOrder(Order order, PaymentRequest paymentRequest) {
-        // 재고 확인 및 업데이트
-        order.getOrderDetails().forEach(orderDetail ->
-                productService.updateStock(orderDetail.getProduct().getId(), orderDetail.getQuantity()));
+    public Order placeOrder(OrderDTO orderDTO) {
+        Order order = new Order();
+        order.setCustomer(Customer.builder().id(orderDTO.getCustomerId()).build());
+        order.setOrderDetails(new ArrayList<>());
+
+        for (OrderDetailDTO orderDetailDTO : orderDTO.getOrderDetails()) {
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setProduct(Product.builder().id(orderDetailDTO.getProductId()).build());
+            orderDetail.setQuantity(orderDetailDTO.getQuantity());
+            orderDetail.setPrice(orderDetailDTO.getPrice());
+            order.getOrderDetails().add(orderDetail);
+        }
+
+        order.setCreatedAt(LocalDateTime.now());
+        order.setUpdatedAt(LocalDateTime.now());
+        order.setStatus("처리 중");
 
         // 주문 저장
         orderRepository.save(order);
 
         // 결제 요청
+        PaymentRequest paymentRequest = orderDTO.getPaymentRequest();
         paymentRequest.setOrderId(order.getId());
         PaymentResponse paymentResponse = paymentService.processPayment(paymentRequest);
 
         if ("SUCCESS".equals(paymentResponse.getStatus())) {
+            // 결제가 성공한 경우에만 재고 업데이트
+            for (OrderDetailDTO orderDetailDTO : orderDTO.getOrderDetails()) {
+                productService.updateStock(orderDetailDTO.getProductId(), orderDetailDTO.getQuantity());
+            }
             order.setStatus("완료");
         } else {
             order.setStatus("실패");
@@ -64,17 +85,9 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    /**
-     * 장바구니에 담긴 모든 상품을 하나의 주문으로 변환하고 결제를 처리합니다.
-     * @param customerId 고객 ID
-     * @param paymentRequest 결제 요청 정보
-     * @return 생성된 주문
-     */
     @Transactional
     public Order placeOrdersFromCart(Long customerId, PaymentRequest paymentRequest) {
-        List<Cart> cartItems = cartRepository.findAllByCustomerId(customerId);
-        // 각 장바구니 항목에 대해 재고 확인 및 업데이트
-        cartItems.forEach(cart -> productService.updateStock(cart.getProduct().getId(), cart.getQuantity()));
+        List<Cart> cartItems = cartRepository.findByCustomerId(customerId);
 
         // 전체 주문 가격 계산
         long totalPrice = cartItems.stream()
@@ -108,9 +121,6 @@ public class OrderService {
         // 주문에 주문 상세 항목 설정
         order.setOrderDetails(orderDetails);
 
-        // 장바구니 비우기
-        cartRepository.deleteAll(cartItems);
-
         // 결제 요청
         paymentRequest.setCustomerId(order.getCustomer().getId());
         paymentRequest.setOrderId(order.getId());
@@ -118,7 +128,11 @@ public class OrderService {
         PaymentResponse paymentResponse = paymentService.processPayment(paymentRequest);
 
         if ("SUCCESS".equals(paymentResponse.getStatus())) {
+            // 결제가 성공한 경우에만 재고 업데이트
+            cartItems.forEach(cart -> productService.updateStock(cart.getProduct().getId(), cart.getQuantity()));
             order.setStatus("완료");
+            // 장바구니 비우기
+            cartRepository.deleteAll(cartItems);
         } else {
             order.setStatus("실패");
         }

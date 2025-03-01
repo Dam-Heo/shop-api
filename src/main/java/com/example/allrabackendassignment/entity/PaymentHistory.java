@@ -38,7 +38,7 @@ public class PaymentHistory {
     @Column(name = "status", nullable = false)
     private String status; // 결제 상태
 
-    @Column(name = "transaction_id", nullable = false)
+    @Column(name = "transaction_id", nullable = true)
     private String transactionId; // 트랜잭션 ID
 
     @Column(name = "created_at", nullable = false, updatable = false)

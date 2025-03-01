@@ -1,7 +1,9 @@
 package com.example.allrabackendassignment.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "customer")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Customer {
 
     @Id
@@ -26,5 +29,13 @@ public class Customer {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt; // 수정 시간
+
+    @Builder
+    public Customer(Long id, String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.name = name;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }
 

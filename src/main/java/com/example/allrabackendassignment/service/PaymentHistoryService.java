@@ -12,12 +12,20 @@ public class PaymentHistoryService {
     private final PaymentHistoryRepository paymentHistoryRepository;
 
     /**
-     * 특정 고객의 결제 이력을 조회합니다.
+     * 특정 고객의 결제 이력 조회
      * @param customerId 고객 ID
      * @return 결제 이력 목록
      */
-    public List<PaymentHistory> getPaymentHistoriesByCustomerId(Long customerId) {
-        return paymentHistoryRepository.findByCustomerId(customerId);
+    public List<PaymentHistory> getPaymentHistoryByCustomerId(Long customerId) {
+        return paymentHistoryRepository.findAllByCustomerId(customerId);
+    }
+
+    /**
+     * 모든 결제 이력 조회
+     * @return 결제 이력 목록
+     */
+    public List<PaymentHistory> getAllPaymentHistories() {
+        return paymentHistoryRepository.findAll();
     }
 }
 

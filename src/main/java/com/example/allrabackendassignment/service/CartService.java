@@ -5,81 +5,64 @@ import com.example.allrabackendassignment.entity.Cart;
 import com.example.allrabackendassignment.entity.Customer;
 import com.example.allrabackendassignment.entity.Product;
 import com.example.allrabackendassignment.repository.CartRepository;
-import com.example.allrabackendassignment.repository.CustomerRepository;
-import com.example.allrabackendassignment.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
 public class CartService {
     private final CartRepository cartRepository;
-    private final CustomerRepository customerRepository;
-    private final ProductRepository productRepository;
+    private final ProductService productService;
 
-    /**
-     * 특정 고객의 장바구니 항목을 조회합니다.
-     * @param customerId 고객 ID
-     * @return 장바구니 항목 목록
-     */
-    public List<Cart> getCartItems(Long customerId) {
-        return cartRepository.findAllByCustomerId(customerId);
+
+    // 특정 고객의 장바구니 아이템 조회
+    public List<Cart> getCartItemsByCustomerId(Long customerId) {
+        return cartRepository.findByCustomerId(customerId);
     }
 
-    /**
-     * 장바구니에 항목을 추가합니다.
-     * @param cartDTO 장바구니 DTO
-     * @return 추가된 장바구니 항목
-     */
-    public Cart addCartItem(CartDTO cartDTO) {
-        Customer customer = customerRepository.getReferenceById(cartDTO.getCustomerId());
-        Product product = productRepository.getReferenceById(cartDTO.getProductId());
-        if(product.getStock() < cartDTO.getQuantity()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "재고가 부족합니다."
-            );
+    // 장바구니 아이템 추가
+    @Transactional
+    public boolean addCartItem(CartDTO cartDTO) {
+        boolean stockAvailable = productService.checkAndUpdateStock(cartDTO.getProductId(), cartDTO.getQuantity());
+        if (!stockAvailable) {
+            return false; // 재고 부족
         }
+
         Cart cart = Cart.builder()
-                .customer(customer)
-                .product(product)
+                .customer(Customer.builder().id(cartDTO.getCustomerId()).build())
+                .product(Product.builder().id(cartDTO.getProductId()).build())
                 .quantity(cartDTO.getQuantity())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        return cartRepository.save(cart);
+        cartRepository.save(cart);
+        return true; // 재고 충분
     }
 
-    /**
-     * 특정 장바구니 항목을 삭제합니다.
-     * @param cartId 장바구니 ID
-     */
-    public void deleteCartItem(Long cartId) {
-        cartRepository.deleteById(cartId);
-    }
+    // 장바구니 아이템 수정
+    @Transactional
+    public boolean updateCartItem(Long id, CartDTO cartDTO) {
+        Cart existingCart = cartRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Cart item not found"));
 
-    /**
-     * 특정 장바구니 항목의 수량을 업데이트합니다.
-     * @param cartId 장바구니 ID
-     * @param quantity 업데이트할 수량
-     * @return 업데이트된 장바구니 항목
-     */
-    public Cart updateCartItem(Long cartId, Integer quantity) {
-        Cart cart = cartRepository.findById(cartId).orElseThrow();
-        int sumQty = cart.getQuantity() + quantity;
-        if(cart.getProduct().getStock() < sumQty) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "재고가 부족합니다."
-            );
+        int quantityDifference = cartDTO.getQuantity() - existingCart.getQuantity();
+        boolean stockAvailable = productService.checkAndUpdateStock(existingCart.getProduct().getId(), quantityDifference);
+        if (!stockAvailable) {
+            return false; // 재고 부족
         }
-        cart.setQuantity(quantity);
-        cart.setUpdatedAt(LocalDateTime.now()); // 수정 시간 업데이트
-        return cartRepository.save(cart);
+
+        existingCart.setQuantity(cartDTO.getQuantity());
+        existingCart.setUpdatedAt(LocalDateTime.now());
+        cartRepository.save(existingCart);
+        return true; // 재고 충분
+    }
+
+    // 장바구니 아이템 삭제
+    public void deleteCartItem(Long id) {
+        cartRepository.deleteById(id);
     }
 }

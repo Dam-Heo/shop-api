@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -17,9 +18,7 @@ public class PaymentService {
 
     private final RestTemplate restTemplate;
     private final PaymentHistoryRepository paymentHistoryRepository;
-
-    private final String PAYMENT_API_URL = "https://allra-backend-assignment.free.beeceptor.com/api/v1/payment";
-
+    private static final String PAYMENT_API_URL = "https://allra-backend-assignment.free.beeceptor.com/api/v1/payment";
     /**
      * 외부 결제 API를 호출하여 결제를 처리합니다.
      * @param paymentRequest 결제 요청 정보
@@ -40,10 +39,18 @@ public class PaymentService {
 
         PaymentResponse paymentResponse;
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
-            paymentResponse = responseEntity.getBody();
-            savePaymentHistory(paymentRequest, paymentResponse);
+            if(Objects.requireNonNull(responseEntity.getBody()).getStatus().equals("SUCCESS")) {
+                paymentResponse = responseEntity.getBody();
+                savePaymentHistory(paymentRequest, Objects.requireNonNull(paymentResponse));
+            }else{
+                paymentResponse = responseEntity.getBody();
+                Objects.requireNonNull(paymentResponse).setStatus("FAILURE");
+                savePaymentHistory(paymentRequest, paymentResponse);
+            }
         } else {
-            throw new RuntimeException("결제 처리 중 오류가 발생했습니다.");
+            paymentResponse = responseEntity.getBody();
+            Objects.requireNonNull(paymentResponse).setStatus("FAILURE");
+            savePaymentHistory(paymentRequest, paymentResponse);
         }
 
         return paymentResponse;

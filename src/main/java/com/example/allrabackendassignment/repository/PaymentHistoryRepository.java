@@ -11,6 +11,6 @@ import java.util.List;
  */
 @Repository
 public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, Long> {
-    List<PaymentHistory> findByCustomerId(Long customerId);
+    List<PaymentHistory> findAllByCustomerId(Long customerId);
 }
 
