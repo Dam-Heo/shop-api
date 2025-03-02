@@ -46,7 +46,7 @@ public class OrderService {
      * @return 생성된 주문
      */
     @Transactional
-    public Order placeOrder(OrderDTO orderDTO) {
+    public PaymentResponse placeOrder(OrderDTO orderDTO) {
         Order order = new Order();
         order.setCustomer(Customer.builder().id(orderDTO.getCustomerId()).build());
         order.setOrderDetails(new ArrayList<>());
@@ -82,11 +82,12 @@ public class OrderService {
         }
 
         order.setUpdatedAt(LocalDateTime.now());
-        return orderRepository.save(order);
+        orderRepository.save(order);
+        return paymentResponse;
     }
 
     @Transactional
-    public Order placeOrdersFromCart(Long customerId, PaymentRequest paymentRequest) {
+    public PaymentResponse placeOrdersFromCart(Long customerId, PaymentRequest paymentRequest) {
         List<Cart> cartItems = cartRepository.findByCustomerId(customerId);
 
         // 전체 주문 가격 계산
@@ -95,7 +96,7 @@ public class OrderService {
                 .sum();
 
         Order order = Order.builder()
-                .customer(cartItems.get(0).getCustomer())
+                .customer(cartItems.getFirst().getCustomer())
                 .totalPrice(totalPrice)
                 .status("처리 중")
                 .createdAt(LocalDateTime.now())
@@ -138,7 +139,8 @@ public class OrderService {
         }
 
         order.setUpdatedAt(LocalDateTime.now());
-        return orderRepository.save(order);
+        orderRepository.save(order);
+        return paymentResponse;
     }
 }
 

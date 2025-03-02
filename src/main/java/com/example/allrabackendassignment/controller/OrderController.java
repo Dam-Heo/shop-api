@@ -2,6 +2,7 @@ package com.example.allrabackendassignment.controller;
 
 import com.example.allrabackendassignment.dto.OrderDTO;
 import com.example.allrabackendassignment.dto.PaymentRequest;
+import com.example.allrabackendassignment.dto.PaymentResponse;
 import com.example.allrabackendassignment.entity.Order;
 import com.example.allrabackendassignment.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +35,9 @@ public class OrderController {
      * @return 생성된 주문
      */
     @PostMapping
-    public ResponseEntity<Order> placeOrder(@RequestBody OrderDTO orderDTO) {
-        Order createdOrder = orderService.placeOrder(orderDTO);
-        return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
+    public ResponseEntity<PaymentResponse> placeOrder(@RequestBody OrderDTO orderDTO) {
+        PaymentResponse paymentResponse = orderService.placeOrder(orderDTO);
+        return new ResponseEntity<>(paymentResponse, HttpStatus.CREATED);
     }
 
     /**
@@ -46,9 +47,9 @@ public class OrderController {
      * @return 생성된 주문
      */
     @PostMapping("/{customerId}/cart-to-order")
-    public ResponseEntity<Order> placeOrdersFromCart(@PathVariable Long customerId, @RequestBody PaymentRequest paymentRequest) {
-        Order createdOrder = orderService.placeOrdersFromCart(customerId, paymentRequest);
-        return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
+    public ResponseEntity<PaymentResponse> placeOrdersFromCart(@PathVariable Long customerId, @RequestBody PaymentRequest paymentRequest) {
+        PaymentResponse paymentResponse = orderService.placeOrdersFromCart(customerId, paymentRequest);
+        return new ResponseEntity<>(paymentResponse, HttpStatus.CREATED);
     }
 }
 
