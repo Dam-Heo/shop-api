@@ -1,8 +1,6 @@
 package com.example.allrabackendassignment.service;
 
-import com.example.allrabackendassignment.entity.Customer;
 import com.example.allrabackendassignment.entity.User;
-import com.example.allrabackendassignment.repository.CustomerRepository;
 import com.example.allrabackendassignment.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
