@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 @Builder
 public class CustomerDTO {
     private Long id; // 고객 ID
-    private String name; // 고객 이름
+    private Long userId; // 사용자 ID
+    private String address; // 주소
+    private String phoneNumber; // 전화번호
     private LocalDateTime createdAt; // 생성 시간
     private LocalDateTime updatedAt; // 수정 시간
 }
