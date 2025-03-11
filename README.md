@@ -4,18 +4,27 @@
 - Java 21
 - Spring Boot 3.4.3
 - MariaDB 10.6.21
-- JPA (Java Persistence API)
+- Spring Data JPA (Java Persistence API)
 - Git
 
 #ERD
 ```mermaid
 
 erDiagram
+    USER {
+        Long id
+        String username
+        String password
+        String role
+        String email
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
     CUSTOMER {
         Long id
-        String name
-        String email
-        String password
+        Long userId
+        String address
+        String phoneNumber
         LocalDateTime createdAt
         LocalDateTime updatedAt
     }
@@ -65,51 +74,57 @@ erDiagram
         LocalDateTime updatedAt
     }
 
-    CUSTOMER ||--o{ ORDER : has
+    USER ||--o{ CUSTOMER : has
     CUSTOMER ||--o{ CART : has
+    CUSTOMER ||--o{ ORDER : has
     CUSTOMER ||--o{ PAYMENT_HISTORY : has
     ORDER ||--o{ ORDER_DETAIL : contains
     ORDER ||--o{ PAYMENT_HISTORY : generates
     PRODUCT ||--o{ CART : contains
-
 ```
 
 # API 엔드포인트
 
-## 특정 고객 조회
-GET /customers/{id}
+## 특정 사용자 조회
+GET /users/{id}
 
-## 새로운 고객 추가
-POST /customers
+## 사용자 추가
+POST /users
 
-## 기존 고객 수정
-PUT /customers/{id}
+## 사용자 수정
+PUT /users/{id}
 
-## 고객 삭제
-DELETE /customers/{id}
+## 사용자 삭제
+DELETE /users/{id}
+
+## 고객 조회
+GET /customers/{userId}
+
+## 고객 수정
+PUT /customers/{userId}
 
 ## 모든 상품 조회
 GET /products
 
-## 특정 상품 조회
+## 상품 조회
 GET /products/{id}
 
-## 재고 수량이 0보다 큰 상품 조회
+## 재고 상품 조회
 GET /products/in-stock
 
-## 새로운 상품 추가
+## 상품 추가
 POST /products
 
-## 기존 상품 수정
+## 상품 수정
 PUT /products/{id}
 
 ## 상품 삭제
 DELETE /products/{id}
 
-## 특정 고객의 장바구니 아이템 조회
+## 장바구니 아이템 조회
 GET /cart/{customerId}
 
-## 장바구니에 아이템 추가
+## 장바구니 아이템 추가
 POST /cart
 
 ## 장바구니 아이템 수정
@@ -118,16 +133,16 @@ PUT /cart/{id}
 ## 장바구니 아이템 삭제
 DELETE /cart/{id}
 
-## 특정 고객의 주문 내역 조회
+## 주문 내역 조회
 GET /orders/{customerId}
 
-## 주문 생성 및 결제 처리
+## 주문 생성 및 결제
 POST /orders
 
-## 장바구니의 모든 상품을 주문으로 변환하고 결제 처리
+## 장바구니 -> 주문 및 결제
 POST /orders/{customerId}/cart-to-order
 
-## 특정 고객의 결제 이력 조회
+## 결제 이력 조회
 GET /payment-history/{customerId}
 
 ## 모든 결제 이력 조회
