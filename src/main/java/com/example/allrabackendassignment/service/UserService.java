@@ -50,7 +50,7 @@ public class UserService {
     @Transactional
     public User addUser(UserRegistrationRequest request) {
         User user = request.getUser();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(request.getUser().getPassword()));
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         User savedUser = userRepository.save(user);

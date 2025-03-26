@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+<h1>Spring Boot WebSocket 서버와 연결</h1>
+<input id="messageInput" type="text" placeholder="메시지 입력" />
+<button id="sendButton">보내기</button>
+<ul id="messages"></ul>
+
+<script>
+    const socket = new WebSocket("ws://localhost:8080/websocket");
+
+    socket.onopen = () => console.log("서버와 연결 성공!");
+
+    socket.onmessage = (event) => {
+        const messages = document.getElementById("messages");
+        const newMessage = document.createElement("li");
+        newMessage.textContent = event.data;
+        messages.appendChild(newMessage);
+    };
+
+    document.getElementById("sendButton").addEventListener("click", () => {
+        const input = document.getElementById("messageInput");
+        socket.send(input.value);
+        input.value = "";
+    });
+
+    socket.onclose = () => console.log("서버 연결 종료됨");
+</script>
+</body>
+</html>
